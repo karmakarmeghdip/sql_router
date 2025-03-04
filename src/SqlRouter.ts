@@ -5,11 +5,13 @@ import { FileLoader } from './utils/FileLoader';
 import { RouteHandler } from './utils/RouteHandler.ts';
 import { RequestParser } from './utils/RequestParser.ts';
 import { DatabaseManager } from './utils/DatabaseManager.ts';
+import { Migrations } from './utils/Migrations.ts';
 
 export class SqlRouter {
   private apiDir: string;
   private dbPath: string;
   private tempTableName: string;
+  private migrationsDir?: string;
   private sqlFileCache: Map<string, string> = new Map();
   private db: Database;
   private fileLoader: FileLoader;
@@ -21,6 +23,7 @@ export class SqlRouter {
     this.apiDir = options.apiDir;
     this.dbPath = options.dbPath || ':memory:';
     this.tempTableName = options.tempTableName || 'request_context';
+    this.migrationsDir = options.migrationsDir;
 
     // Initialize database
     this.db = new Database(this.dbPath);
@@ -37,6 +40,15 @@ export class SqlRouter {
   private async initializeCache() {
     await this.fileLoader.loadSqlFiles(this.apiDir, this.sqlFileCache);
     console.log(`SQL Router initialized with ${this.sqlFileCache.size} routes`);
+  }
+
+  public async runMigrations(): Promise<string[]> {
+    if (!this.migrationsDir) {
+      throw new Error('Migrations directory not configured');
+    }
+
+    const migrations = new Migrations(this.db, this.migrationsDir);
+    return await migrations.runMigrations();
   }
 
   async handleRequest(req: Request): Promise<Response> {
@@ -99,6 +111,11 @@ export class SqlRouter {
       port,
       fetch: (req) => this.handleRequest(req)
     });
+  }
+
+  // Get access to the database for external operations
+  getDb(): Database {
+    return this.db;
   }
 
   // Close database connection when shutting down

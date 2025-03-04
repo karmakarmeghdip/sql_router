@@ -2,6 +2,7 @@ export interface SqlRouterOptions {
   apiDir: string;
   dbPath?: string;
   tempTableName?: string;
+  migrationsDir?: string;
 }
 
 export interface RequestContext {
