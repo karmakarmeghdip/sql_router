@@ -1,0 +1,33 @@
+{
+  "name": "sql-router",
+  "version": "0.1.0",
+  "description": "A SQL-based API router for Bun applications",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist",
+    "dev": "bun --watch examples/server.ts",
+    "test": "bun test"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "sql",
+    "router",
+    "api",
+    "bun",
+    "sqlite"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "bun": "^1.0.0"
+  }
+}
